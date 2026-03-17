@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stub Chat</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f5f0e8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    padding: 1rem;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    color: #5a4a3a;
+    margin-bottom: 1rem;
+  }
+
+  /* --- Stub character --- */
+  .stub-container {
+    position: relative;
+    width: 160px;
+    height: 185px;
+    margin-bottom: 1rem;
+  }
+
+  .stub-body {
+    width: 140px;
+    height: 130px;
+    background: radial-gradient(ellipse at 50% 60%, #e8d5b0, #d4ba8a);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+
+  /* Brown stripe */
+  .stub-body::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 60px;
+    background: #7a5c3a;
+    border-radius: 14px;
+  }
+
+  /* Legs */
+  .legs {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 0;
+  }
+
+  .leg {
+    width: 24px;
+    height: 18px;
+    background: radial-gradient(ellipse at 50% 40%, #e8d5b0, #d4ba8a);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Fur texture */
+  .stub-body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 25% 30%, rgba(255,255,255,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 70% 25%, rgba(255,255,255,0.08) 0%, transparent 30%);
+  }
+
+  /* Eyes */
+  .eyes {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 24px;
+    z-index: 2;
+  }
+
+  .eye {
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle at 40% 35%, #fff 20%, #1a1a2e 21%, #1a1a2e 100%);
+    border-radius: 50%;
+    position: relative;
+    animation: blink 4s infinite;
+  }
+
+  .eye::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    top: 6px;
+    left: 8px;
+  }
+
+  @keyframes blink {
+    0%, 95%, 100% { transform: scaleY(1); }
+    97% { transform: scaleY(0.1); }
+  }
+
+  /* Mouth area */
+  .mouth {
+    position: absolute;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 6px;
+    border-bottom: 2.5px solid #7a5c3a;
+    border-radius: 0 0 50% 50%;
+    z-index: 2;
+    transition: all 0.3s;
+  }
+
+  .stub-container.talking .mouth {
+    border: none;
+    background: #5a3a2a;
+    border-radius: 50%;
+    animation: talk 0.25s infinite alternate;
+  }
+
+  @keyframes talk {
+    from { width: 10px; height: 5px; border-radius: 0 0 50% 50%; }
+    to { width: 14px; height: 10px; border-radius: 40% 40% 50% 50%; }
+  }
+
+  .stub-container.munching .mouth {
+    border: none;
+    background: #5a3a2a;
+    border-radius: 50%;
+    animation: munchMouth 0.2s infinite alternate;
+  }
+
+  @keyframes munchMouth {
+    from { width: 14px; height: 4px; border-radius: 0 0 50% 50%; }
+    to { width: 16px; height: 12px; border-radius: 40% 40% 50% 50%; }
+  }
+
+  /* Idle bounce */
+  .stub-container {
+    animation: idle 3s ease-in-out infinite;
+  }
+
+  @keyframes idle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* Tricks */
+  .stub-container.trick-spin {
+    animation: spin 0.8s ease-in-out;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .stub-container.trick-jump {
+    animation: jump 0.6s ease-in-out;
+  }
+  @keyframes jump {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-60px); }
+    50% { transform: translateY(-65px) scaleX(0.9) scaleY(1.1); }
+    80% { transform: translateY(5px) scaleX(1.1) scaleY(0.9); }
+  }
+
+  .stub-container.trick-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-12px) rotate(-5deg); }
+    30% { transform: translateX(10px) rotate(4deg); }
+    45% { transform: translateX(-8px) rotate(-3deg); }
+    60% { transform: translateX(6px) rotate(2deg); }
+    75% { transform: translateX(-3px) rotate(-1deg); }
+  }
+
+  .stub-container.trick-roll {
+    animation: roll 1s ease-in-out;
+  }
+  @keyframes roll {
+    0% { transform: translateX(0) rotate(0deg); }
+    50% { transform: translateX(40px) rotate(360deg); }
+    100% { transform: translateX(0) rotate(720deg); }
+  }
+
+  .stub-container.trick-dance {
+    animation: dance 1.2s ease-in-out;
+  }
+  @keyframes dance {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    15% { transform: translateY(-10px) rotate(-8deg); }
+    30% { transform: translateY(0) rotate(8deg); }
+    45% { transform: translateY(-15px) rotate(-5deg); }
+    60% { transform: translateY(0) rotate(5deg); }
+    75% { transform: translateY(-10px) rotate(-8deg); }
+    90% { transform: translateY(0) rotate(3deg); }
+  }
+
+  /* Food pellet */
+  .food-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle at 35% 35%, #a0794a, #6b4c2a);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10;
+    animation: foodFall 0.7s ease-in forwards;
+  }
+
+  @keyframes foodFall {
+    0% { opacity: 1; transform: translateY(-30px); }
+    70% { opacity: 1; transform: translateY(25px); }
+    85% { opacity: 1; transform: translateY(20px) scale(0.5); }
+    100% { opacity: 0; transform: translateY(20px) scale(0); }
+  }
+
+  /* Pet/tap reaction */
+  .stub-container.petted {
+    animation: petWiggle 0.6s ease-in-out;
+  }
+  @keyframes petWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-6deg) scale(1.05); }
+    40% { transform: rotate(5deg) scale(1.05); }
+    60% { transform: rotate(-3deg); }
+    80% { transform: rotate(2deg); }
+  }
+
+  .heart-particle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+    font-size: 1.2rem;
+    animation: heartFloat 1s ease-out forwards;
+  }
+
+  @keyframes heartFloat {
+    0% { opacity: 1; transform: translateY(0) scale(0.5); }
+    50% { opacity: 1; transform: translateY(-25px) scale(1); }
+    100% { opacity: 0; transform: translateY(-45px) scale(0.8); }
+  }
+
+  .stub-body { cursor: pointer; }
+
+  /* Reading book */
+  .book {
+    position: absolute;
+    bottom: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5rem;
+    z-index: 3;
+    display: none;
+    animation: bookBob 2s ease-in-out infinite;
+  }
+
+  .stub-container.reading .book {
+    display: block;
+  }
+
+  @keyframes bookBob {
+    0%, 100% { transform: translateX(-50%) rotate(-2deg); }
+    50% { transform: translateX(-50%) rotate(2deg); }
+  }
+
+  .stub-container.reading {
+    animation: readBreathe 3s ease-in-out infinite;
+  }
+
+  @keyframes readBreathe {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  .stub-container.reading .eye {
+    animation: readEyes 3s ease-in-out infinite;
+  }
+
+  @keyframes readEyes {
+    0%, 100% { transform: translateY(4px); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* Toy ball */
+  .toy-ball {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b);
+    border-radius: 50%;
+    z-index: 100;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .toy-ball::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 5px;
+    width: 6px;
+    height: 4px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+  }
+
+  /* Stub chase */
+  .stub-container.chasing {
+    animation: none;
+    transition: transform 0.4s ease-in-out;
+  }
+
+  .stub-container.catch-jump {
+    animation: catchJump 0.5s ease-in-out;
+  }
+
+  @keyframes catchJump {
+    0% { transform: translateY(0); }
+    40% { transform: translateY(-30px) scale(1.05); }
+    70% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* Stub color picker */
+  .color-picker {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 0.8rem;
+    max-width: 320px;
+  }
+
+  .color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.2s, transform 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.active { border-color: #5a4a3a; }
+
+  .color-swatch.locked {
+    filter: brightness(0.4);
+    cursor: not-allowed;
+    position: relative;
+  }
+
+  .color-swatch.locked::after {
+    content: '🔒';
+    position: absolute;
+    font-size: 0.6rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .unlock-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #5a4a3a;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    z-index: 200;
+    animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  @keyframes toastOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* Happy munch */
+  .stub-container.munching {
+    animation: munch 0.4s ease-in-out 3;
+  }
+  @keyframes munch {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.92) scaleX(1.04); }
+  }
+
+  /* Friendship meter */
+  .friendship-container {
+    width: 100%;
+    max-width: 180px;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .friendship-label {
+    font-size: 0.75rem;
+    color: #7a5c3a;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .friendship-hearts {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .friendship-heart {
+    font-size: 1.1rem;
+    transition: all 0.3s;
+  }
+
+  .friendship-heart.filled {
+    filter: none;
+  }
+
+  .friendship-heart.empty {
+    filter: grayscale(1) opacity(0.3);
+  }
+
+  .friendship-bar {
+    width: 100%;
+    height: 6px;
+    background: #e0d5c5;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .friendship-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b8a, #ff4068);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .friendship-level-up {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 1.2rem;
+    color: #ff4068;
+    font-weight: bold;
+    z-index: 200;
+    text-align: center;
+    animation: levelUpPop 1.5s ease-out forwards;
+    text-shadow: 0 2px 8px rgba(255,64,104,0.3);
+  }
+
+  @keyframes levelUpPop {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    20% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    40% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translate(-50%, -60%) scale(1); opacity: 0; }
+  }
+
+  /* Hunger meter */
+  .hunger-bar {
+    width: 100%;
+    max-width: 160px;
+    height: 10px;
+    background: #e0d5c5;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+    position: relative;
+  }
+
+  .hunger-bar::before {
+    content: '🍖';
+    position: absolute;
+    left: -22px;
+    top: -5px;
+    font-size: 1rem;
+  }
+
+  .hunger-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #d4a44a, #e8c56a);
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+
+  /* Thirst meter */
+  .thirst-bar {
+    width: 100%;
+    max-width: 160px;
+    height: 10px;
+    background: #e0d5c5;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+    position: relative;
+  }
+
+  .thirst-bar::before {
+    content: '💧';
+    position: absolute;
+    left: -22px;
+    top: -5px;
+    font-size: 1rem;
+  }
+
+  .thirst-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5b9bd5, #7ec8e3);
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+
+  /* Water droplet */
+  .water-particle {
+    position: absolute;
+    width: 6px;
+    height: 8px;
+    background: radial-gradient(circle at 40% 30%, #7ec8e3, #3a8fd4);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    pointer-events: none;
+    z-index: 10;
+    animation: waterFall 0.6s ease-in forwards;
+  }
+
+  @keyframes waterFall {
+    0% { opacity: 1; transform: translateY(-25px); }
+    70% { opacity: 1; transform: translateY(20px); }
+    100% { opacity: 0; transform: translateY(20px) scale(0); }
+  }
+
+  /* Party hat */
+  .party-hat {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 35px solid #ff6b6b;
+    z-index: 5;
+    display: none;
+  }
+
+  .party-hat::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -18px;
+    width: 36px;
+    height: 8px;
+    background: repeating-linear-gradient(90deg, #f7d94e, #f7d94e 6px, #5bc0eb 6px, #5bc0eb 12px);
+    border-radius: 0 0 4px 4px;
+  }
+
+  .party-hat::before {
+    content: '⭐';
+    position: absolute;
+    top: -22px;
+    left: -7px;
+    font-size: 0.8rem;
+  }
+
+  .stub-container.birthday .party-hat {
+    display: block;
+  }
+
+  /* Sad state */
+  .stub-container.sad .eye {
+    animation: none;
+    background: radial-gradient(circle at 40% 45%, #fff 20%, #1a1a2e 21%, #1a1a2e 100%);
+  }
+
+  .stub-container.sad .eye::after {
+    top: 8px;
+  }
+
+  .stub-container.sad .mouth {
+    border-bottom: none;
+    border-top: 2.5px solid #7a5c3a;
+    border-radius: 50% 50% 0 0;
+    height: 5px;
+    width: 10px;
+  }
+
+  .tear {
+    position: absolute;
+    width: 5px;
+    height: 7px;
+    background: radial-gradient(circle at 40% 30%, #7ec8e3, #5b9bd5);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    animation: tearDrop 1.5s ease-in forwards;
+  }
+
+  @keyframes tearDrop {
+    0% { opacity: 0; transform: translateY(0); }
+    10% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(40px); }
+  }
+
+  /* Sleep state */
+  .stub-container.sleeping {
+    animation: sleepBreathe 2.5s ease-in-out infinite;
+  }
+
+  @keyframes sleepBreathe {
+    0%, 100% { transform: scaleY(1) scaleX(1); }
+    50% { transform: scaleY(1.03) scaleX(0.98); }
+  }
+
+  .stub-container.sleeping .eye {
+    animation: none;
+    background: none;
+    height: 4px;
+    width: 24px;
+    border-top: 3px solid #1a1a2e;
+    border-radius: 50% 50% 0 0;
+    transform: translateY(8px);
+  }
+
+  .stub-container.sleeping .eye::after {
+    display: none;
+  }
+
+  .stub-container.sleeping .mouth {
+    border-bottom: none;
+    width: 10px;
+    height: 0;
+    border-top: 2px solid #7a5c3a;
+    border-radius: 50% 50% 0 0;
+  }
+
+  .zzz {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1rem;
+    color: #7a5c3a;
+    opacity: 0;
+    z-index: 10;
+    pointer-events: none;
+    animation: floatZ 2s ease-in-out infinite;
+  }
+
+  .zzz:nth-child(2) { animation-delay: 0.7s; right: -5px; top: -5px; font-size: 0.8rem; }
+  .zzz:nth-child(3) { animation-delay: 1.4s; right: -10px; top: -15px; font-size: 0.65rem; }
+
+  @keyframes floatZ {
+    0% { opacity: 0; transform: translateY(0); }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-25px) translateX(8px); }
+  }
+
+  .stub-container.trick-squish {
+    animation: sit 1.5s ease-in-out;
+  }
+  @keyframes sit {
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    20%, 80% { transform: translateY(10px) scaleY(0.85) scaleX(1.1); }
+  }
+
+  /* Playground button */
+  .playground-btn {
+    background: #7a5c3a;
+    color: #fff;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .playground-btn:hover { background: #5a4a3a; }
+
+  /* Playground overlay */
+  .playground {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    flex-direction: column;
+  }
+
+  .playground.open { display: flex; }
+
+  .playground-header {
+    padding: 0.6rem 1rem;
+    background: #5a4a3a;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 2;
+  }
+
+  .playground-back {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+  }
+  .playground-back:hover { background: rgba(255,255,255,0.3); }
+
+  .playground-area {
+    flex: 1;
+    background:
+      radial-gradient(circle at 20% 80%, #a8d5a0 0%, transparent 30%),
+      radial-gradient(circle at 70% 30%, #b8deb0 0%, transparent 25%),
+      radial-gradient(circle at 50% 60%, #c8e8c0 0%, transparent 35%),
+      linear-gradient(180deg, #87ceeb 0%, #b0e0b8 60%, #7ab868 60%, #6aaa58 100%);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  /* Grass texture */
+  .playground-area::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background:
+      repeating-linear-gradient(85deg, transparent, transparent 20px, rgba(0,80,0,0.05) 20px, rgba(0,80,0,0.05) 21px),
+      repeating-linear-gradient(95deg, transparent, transparent 30px, rgba(0,80,0,0.04) 30px, rgba(0,80,0,0.04) 31px);
+    pointer-events: none;
+  }
+
+  /* Clouds */
+  .cloud {
+    position: absolute;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50px;
+    pointer-events: none;
+    animation: cloudDrift linear infinite;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+  }
+  .cloud::before { width: 60%; height: 130%; top: -40%; left: 15%; }
+  .cloud::after { width: 50%; height: 110%; top: -20%; right: 15%; }
+
+  @keyframes cloudDrift {
+    from { transform: translateX(-150px); }
+    to { transform: translateX(calc(100vw + 150px)); }
+  }
+
+  /* Playground stub */
+  .pg-stub {
+    position: absolute;
+    width: 80px;
+    height: 90px;
+    transition: left 0.6s ease-in-out, top 0.6s ease-in-out;
+    pointer-events: none;
+  }
+
+  .pg-stub-body {
+    width: 70px;
+    height: 65px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .pg-stub-body::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 35px;
+    border-radius: 8px;
+  }
+
+  .pg-stub .pg-eyes {
+    position: absolute;
+    top: 36%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 14px;
+    z-index: 2;
+  }
+
+  .pg-stub .pg-eye {
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(circle at 40% 35%, #fff 20%, #1a1a2e 21%, #1a1a2e 100%);
+    border-radius: 50%;
+    position: relative;
+    animation: blink 4s infinite;
+  }
+
+  .pg-stub .pg-eye::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    top: 3px;
+    left: 4px;
+  }
+
+  .pg-stub .pg-legs {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 0;
+  }
+
+  .pg-stub .pg-leg {
+    width: 16px;
+    height: 10px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .pg-stub.running .pg-leg {
+    animation: legRun 0.2s infinite alternate;
+  }
+  .pg-stub.running .pg-leg:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  @keyframes legRun {
+    from { transform: translateY(0) scaleY(1); }
+    to { transform: translateY(-3px) scaleY(0.8); }
+  }
+
+  .pg-stub.running {
+    animation: runBounce 0.3s infinite alternate;
+  }
+
+  @keyframes runBounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+  }
+
+  .pg-stub.idle {
+    animation: idle 3s ease-in-out infinite;
+  }
+
+  /* Paw prints */
+  .paw-print {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(90, 74, 58, 0.15);
+    pointer-events: none;
+    animation: pawFade 2s ease-out forwards;
+  }
+
+  @keyframes pawFade {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes butterflyFloat {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    30% { transform: translateY(-15px) rotate(5deg); }
+    60% { transform: translateY(-8px) rotate(-3deg); }
+  }
+
+  @keyframes ballBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+  }
+
+  @keyframes yarnUnravel {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(15deg) scale(1.1); }
+    50% { transform: rotate(-10deg) scale(0.9); }
+    75% { transform: rotate(8deg) scale(1.05); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
+
+  @keyframes yarnJiggle {
+    from { transform: rotate(-10deg); }
+    to { transform: rotate(10deg); }
+  }
+
+  /* --- Chat UI --- */
+  .chat-box {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .msg {
+    max-width: 80%;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  .msg.stub {
+    background: #f0e6d2;
+    color: #5a4a3a;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.user {
+    background: #7a5c3a;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-input {
+    display: flex;
+    border-top: 1px solid #eee;
+  }
+
+  .chat-input input {
+    flex: 1;
+    border: none;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .chat-input button {
+    background: #7a5c3a;
+    color: #fff;
+    border: none;
+    padding: 0 1.2rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .chat-input button:hover { background: #5a4a3a; }
+</style>
+</head>
+<body>
+
+<h1>Stub Chat</h1>
+
+<div class="stub-container" id="stub">
+  <div class="legs">
+    <div class="leg"></div>
+    <div class="leg"></div>
+  </div>
+  <div class="stub-body"></div>
+  <div class="eyes">
+    <div class="eye"></div>
+    <div class="eye"></div>
+  </div>
+  <div class="mouth"></div>
+  <div class="book">📖</div>
+  <div class="party-hat"></div>
+</div>
+
+<div class="color-picker" id="colorPicker">
+  <div class="color-swatch active" data-stub="tan" style="background: radial-gradient(circle, #e8d5b0, #d4ba8a);" title="Stub"></div>
+  <div class="color-swatch" data-stub="pink" style="background: radial-gradient(circle, #f5c6d0, #e8a0b0);" title="Blurpy"></div>
+  <div class="color-swatch" data-stub="blue" style="background: radial-gradient(circle, #a8d5e8, #7ab8d4);" title="Jerry"></div>
+  <div class="color-swatch" data-stub="green" style="background: radial-gradient(circle, #b8deb0, #8cc480);" title="Sprout"></div>
+  <div class="color-swatch" data-stub="purple" style="background: radial-gradient(circle, #d0b8e8, #b08ed0);" title="Plumbo"></div>
+  <div class="color-swatch" data-stub="orange" style="background: radial-gradient(circle, #f0cfa0, #e0ad60);" title="Biscuit"></div>
+  <div class="color-swatch" data-stub="gray" style="background: radial-gradient(circle, #d0d0d0, #aaaaaa);" title="Dusty"></div>
+  <div class="color-swatch" data-stub="black" style="background: radial-gradient(circle, #3a3a3a, #1a1a1a);" title="Shadow"></div>
+  <div class="color-swatch" data-stub="gold" style="background: radial-gradient(circle, #ffd700, #daa520);" title="Nugget"></div>
+  <div class="color-swatch" data-stub="red" style="background: radial-gradient(circle, #e85050, #c43030);" title="Ember"></div>
+  <div class="color-swatch" data-stub="mint" style="background: radial-gradient(circle, #a8e6cf, #88d8b0);" title="Minty"></div>
+  <div class="color-swatch" data-stub="peach" style="background: radial-gradient(circle, #ffcba4, #f5a070);" title="Fuzzy"></div>
+  <div class="color-swatch" data-stub="navy" style="background: radial-gradient(circle, #2c3e6b, #1a2744);" title="Admiral"></div>
+  <div class="color-swatch" data-stub="lime" style="background: radial-gradient(circle, #c5e84d, #a4c639);" title="Zest"></div>
+  <div class="color-swatch" data-stub="rose" style="background: radial-gradient(circle, #f8b4c8, #e88aaa);" title="Petal"></div>
+  <div class="color-swatch" data-stub="ice" style="background: radial-gradient(circle, #d6eef5, #a8d4e6);" title="Frost"></div>
+  <div class="color-swatch" data-stub="cherry" style="background: radial-gradient(circle, #de3163, #c41e50);" title="Pop"></div>
+  <div class="color-swatch" data-stub="cream" style="background: radial-gradient(circle, #fff8e7, #f5e6c8);" title="Butter"></div>
+  <div class="color-swatch" data-stub="brown" style="background: radial-gradient(circle, #8b6b4a, #6b4c2a);" title="Mocha"></div>
+  <div class="color-swatch" data-stub="lavender" style="background: radial-gradient(circle, #e6d5f5, #d0b8e8);" title="Haze"></div>
+  <div class="color-swatch" data-stub="coral" style="background: radial-gradient(circle, #ff7f7f, #ff6060);" title="Reef"></div>
+  <div class="color-swatch locked" data-stub="sunset" style="background: linear-gradient(135deg, #ff7b54, #ffb26b);" title="Do 15 tricks"></div>
+  <div class="color-swatch locked" data-stub="ocean" style="background: linear-gradient(135deg, #43cea2, #185a9d);" title="Give water 10 times"></div>
+  <div class="color-swatch locked" data-stub="galaxy" style="background: linear-gradient(135deg, #a855f7, #ec4899);" title="Send 100 messages"></div>
+  <div class="color-swatch locked" data-stub="rainbow" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #48dbfb, #ff9ff3);" title="Do 25 tricks"></div>
+  <div class="color-swatch locked" data-stub="ghost" style="background: radial-gradient(circle, rgba(200,200,220,0.6), rgba(180,180,200,0.3)); border: 1px dashed #aaa;" title="Sleep 10 times"></div>
+</div>
+<div class="friendship-container" id="friendshipContainer">
+  <div class="friendship-label" id="friendshipLabel">Stranger</div>
+  <div class="friendship-hearts" id="friendshipHearts">
+    <span class="friendship-heart empty">&#10084;</span>
+    <span class="friendship-heart empty">&#10084;</span>
+    <span class="friendship-heart empty">&#10084;</span>
+    <span class="friendship-heart empty">&#10084;</span>
+    <span class="friendship-heart empty">&#10084;</span>
+  </div>
+  <div class="friendship-bar">
+    <div class="friendship-fill" id="friendshipFill" style="width: 0%"></div>
+  </div>
+</div>
+<div class="hunger-bar">
+  <div class="hunger-fill" id="hungerFill" style="width: 50%"></div>
+</div>
+<div class="thirst-bar">
+  <div class="thirst-fill" id="thirstFill" style="width: 50%"></div>
+</div>
+
+<button class="playground-btn" id="openPlayground">Playground</button>
+
+<div class="playground" id="playground">
+  <div class="playground-header">
+    <span id="pgTitle">Stub's Playground</span>
+    <button class="playground-back" id="closePlayground">Back to Chat</button>
+  </div>
+  <div class="playground-area" id="playgroundArea">
+    <div class="cloud" style="width:100px;height:30px;top:8%;animation-duration:25s;"></div>
+    <div class="cloud" style="width:70px;height:22px;top:15%;animation-duration:35s;animation-delay:10s;"></div>
+    <div class="cloud" style="width:90px;height:26px;top:5%;animation-duration:30s;animation-delay:18s;"></div>
+    <div class="pg-stub idle" id="pgStub">
+      <div class="pg-legs">
+        <div class="pg-leg"></div>
+        <div class="pg-leg"></div>
+      </div>
+      <div class="pg-stub-body" id="pgBody"></div>
+      <div class="pg-eyes">
+        <div class="pg-eye"></div>
+        <div class="pg-eye"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="chat-box">
+  <div class="messages" id="messages"></div>
+  <div class="chat-input">
+    <input type="text" id="input" placeholder="Say something to Stub..." autocomplete="off" />
+    <button id="send">&#9654;</button>
+  </div>
+</div>
+
+<script>
+const messages = document.getElementById('messages');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('send');
+const stub = document.getElementById('stub');
+
+const responses = [
+  "*purrs softly*",
+  "Mrrp!",
+  "*tilts head curiously*",
+  "*bounces excitedly*",
+  "Prrrrr...",
+  "*blinks big eyes at you*",
+  "Mew!",
+  "*rubs against your hand*",
+  "*wiggles happily*",
+  "Mrrrrow?",
+  "*fluffs up with joy*",
+  "*stares at you with enormous eyes*",
+  "Prrt!",
+  "*does a little spin*",
+  "*nuzzles you*",
+  "Mrrp mrrp!",
+  "*yawns and stretches*",
+  "*vibrates with contentment*",
+];
+
+const greetings = [
+  "hi", "hello", "hey", "howdy", "sup", "yo", "hiya",
+];
+
+const greetingResponses = [
+  "*perks up* Mrrp!! Hi!!",
+  "*bounces toward you* Prrrrrt!",
+  "*eyes get even bigger somehow* Mew mew!",
+];
+
+function addMessage(text, sender) {
+  const div = document.createElement('div');
+  div.className = `msg ${sender}`;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// Color system
+const stubColors = {
+  tan:    { name: 'Stub',    body: ['#e8d5b0', '#d4ba8a'], stripe: '#7a5c3a', leg: ['#e8d5b0', '#d4ba8a'],
+            personality: 'Loves everything equally!',
+            bonds: { chat: 2, feed: 2, pet: 2, trick: 2, drink: 2, play: 2 } },
+  pink:   { name: 'Blurpy',  body: ['#f5c6d0', '#e8a0b0'], stripe: '#c47080', leg: ['#f5c6d0', '#e8a0b0'],
+            personality: 'Loves cuddles and pets!',
+            bonds: { chat: 1, feed: 1, pet: 5, trick: 1, drink: 1, play: 2 } },
+  blue:   { name: 'Jerry',   body: ['#a8d5e8', '#7ab8d4'], stripe: '#4a7a9a', leg: ['#a8d5e8', '#7ab8d4'],
+            personality: 'Loves chatting!',
+            bonds: { chat: 5, feed: 1, pet: 1, trick: 1, drink: 2, play: 1 } },
+  green:  { name: 'Sprout',  body: ['#b8deb0', '#8cc480'], stripe: '#4a8040', leg: ['#b8deb0', '#8cc480'],
+            personality: 'Loves food and water!',
+            bonds: { chat: 1, feed: 5, pet: 1, trick: 1, drink: 4, play: 1 } },
+  purple: { name: 'Plumbo',  body: ['#d0b8e8', '#b08ed0'], stripe: '#7a5a9a', leg: ['#d0b8e8', '#b08ed0'],
+            personality: 'Loves learning tricks!',
+            bonds: { chat: 1, feed: 1, pet: 1, trick: 5, drink: 1, play: 2 } },
+  orange: { name: 'Biscuit', body: ['#f0cfa0', '#e0ad60'], stripe: '#a07030', leg: ['#f0cfa0', '#e0ad60'],
+            personality: 'Loves playing fetch!',
+            bonds: { chat: 1, feed: 2, pet: 1, trick: 2, drink: 1, play: 5 } },
+  gray:   { name: 'Dusty',   body: ['#d0d0d0', '#aaaaaa'], stripe: '#666666', leg: ['#d0d0d0', '#aaaaaa'],
+            personality: 'Loves naps and quiet chats.',
+            bonds: { chat: 3, feed: 2, pet: 3, trick: 0, drink: 2, play: 0 } },
+  black:  { name: 'Shadow',  body: ['#3a3a3a', '#1a1a1a'], stripe: '#111111', leg: ['#3a3a3a', '#1a1a1a'], mouth: '#888888',
+            personality: 'Mysterious. Bonds through patience.',
+            bonds: { chat: 3, feed: 1, pet: 4, trick: 1, drink: 1, play: 1 } },
+  gold:   { name: 'Nugget',  body: ['#ffd700', '#daa520'], stripe: '#b8860b', leg: ['#ffd700', '#daa520'],
+            personality: 'Foodie! Lives to eat.',
+            bonds: { chat: 1, feed: 6, pet: 1, trick: 1, drink: 1, play: 1 } },
+  red:    { name: 'Ember',   body: ['#e85050', '#c43030'], stripe: '#8b1a1a', leg: ['#e85050', '#c43030'],
+            personality: 'Fiery and energetic! Loves tricks and play.',
+            bonds: { chat: 1, feed: 1, pet: 0, trick: 4, drink: 2, play: 4 } },
+  sunset: { name: 'Blaze',   body: ['#ff7b54', '#ffb26b'], stripe: '#c44b2a', leg: ['#ff9a5c', '#ffb26b'], gradient: true,
+            personality: 'Show-off! Lives to perform tricks.',
+            bonds: { chat: 1, feed: 1, pet: 1, trick: 6, drink: 1, play: 2 } },
+  ocean:  { name: 'Coral',   body: ['#43cea2', '#185a9d'], stripe: '#0e3d6b', leg: ['#43cea2', '#185a9d'], gradient: true,
+            personality: 'Water lover! Happiest when hydrated.',
+            bonds: { chat: 1, feed: 1, pet: 2, trick: 1, drink: 6, play: 1 } },
+  galaxy: { name: 'Nova',    body: ['#a855f7', '#ec4899'], stripe: '#7c1f8e', leg: ['#a855f7', '#ec4899'], gradient: true,
+            personality: 'Enigmatic. Bonds equally but slowly.',
+            bonds: { chat: 1, feed: 1, pet: 1, trick: 1, drink: 1, play: 1 } },
+  mint:   { name: 'Minty',   body: ['#a8e6cf', '#88d8b0'], stripe: '#4a9a6a', leg: ['#a8e6cf', '#88d8b0'],
+            personality: 'Fresh and chill. Loves water and pets.',
+            bonds: { chat: 1, feed: 1, pet: 4, trick: 1, drink: 5, play: 1 } },
+  peach:  { name: 'Fuzzy',   body: ['#ffcba4', '#f5a070'], stripe: '#c06030', leg: ['#ffcba4', '#f5a070'],
+            personality: 'Sweet and snuggly. Loves food and cuddles.',
+            bonds: { chat: 2, feed: 4, pet: 4, trick: 1, drink: 1, play: 1 } },
+  navy:   { name: 'Admiral', body: ['#2c3e6b', '#1a2744'], stripe: '#0f1a30', leg: ['#2c3e6b', '#1a2744'], mouth: '#6688aa',
+            personality: 'Disciplined. Respects tricks and routine.',
+            bonds: { chat: 2, feed: 1, pet: 1, trick: 5, drink: 2, play: 2 } },
+  lime:   { name: 'Zest',    body: ['#c5e84d', '#a4c639'], stripe: '#6b8e23', leg: ['#c5e84d', '#a4c639'],
+            personality: 'Hyperactive! Loves play and tricks!',
+            bonds: { chat: 1, feed: 1, pet: 0, trick: 4, drink: 1, play: 6 } },
+  rose:   { name: 'Petal',   body: ['#f8b4c8', '#e88aaa'], stripe: '#c05a7a', leg: ['#f8b4c8', '#e88aaa'],
+            personality: 'Romantic. Bonds through kind words.',
+            bonds: { chat: 6, feed: 1, pet: 3, trick: 1, drink: 1, play: 1 } },
+  ice:    { name: 'Frost',   body: ['#d6eef5', '#a8d4e6'], stripe: '#6aaac4', leg: ['#d6eef5', '#a8d4e6'],
+            personality: 'Cool and reserved. Warms up with water and patience.',
+            bonds: { chat: 2, feed: 1, pet: 2, trick: 1, drink: 5, play: 1 } },
+  cherry: { name: 'Pop',     body: ['#de3163', '#c41e50'], stripe: '#8b0a2e', leg: ['#de3163', '#c41e50'], mouth: '#ff6688',
+            personality: 'Wild! Loves play and being fed treats.',
+            bonds: { chat: 1, feed: 5, pet: 1, trick: 2, drink: 1, play: 4 } },
+  rainbow: { name: 'Prism',  body: ['#ff6b6b', '#ffd93d'], stripe: '#cc44cc', leg: ['#48dbfb', '#ff9ff3'], gradient: true,
+            personality: 'Legendary! Bonds through everything equally and generously.',
+            bonds: { chat: 3, feed: 3, pet: 3, trick: 3, drink: 3, play: 3 } },
+  cream:  { name: 'Butter',  body: ['#fff8e7', '#f5e6c8'], stripe: '#d4b896', leg: ['#fff8e7', '#f5e6c8'],
+            personality: 'Soft and gentle. Loves quiet chats and pets.',
+            bonds: { chat: 4, feed: 2, pet: 4, trick: 1, drink: 1, play: 1 } },
+  brown:  { name: 'Mocha',   body: ['#8b6b4a', '#6b4c2a'], stripe: '#3a2a1a', leg: ['#8b6b4a', '#6b4c2a'], mouth: '#a08060',
+            personality: 'Earthy and dependable. Loves food.',
+            bonds: { chat: 2, feed: 5, pet: 2, trick: 1, drink: 2, play: 1 } },
+  lavender: { name: 'Haze',  body: ['#e6d5f5', '#d0b8e8'], stripe: '#a888c8', leg: ['#e6d5f5', '#d0b8e8'],
+            personality: 'Dreamy. Loves sleep and gentle pets.',
+            bonds: { chat: 3, feed: 1, pet: 5, trick: 1, drink: 1, play: 1 } },
+  coral:  { name: 'Reef',    body: ['#ff7f7f', '#ff6060'], stripe: '#cc3a3a', leg: ['#ff7f7f', '#ff6060'],
+            personality: 'Warm and playful. Loves tricks and play.',
+            bonds: { chat: 1, feed: 2, pet: 2, trick: 3, drink: 2, play: 4 } },
+  ghost:  { name: 'Wisp',    body: ['rgba(200,200,220,0.4)', 'rgba(180,180,200,0.25)'], stripe: 'rgba(120,120,150,0.5)', leg: ['rgba(200,200,220,0.4)', 'rgba(180,180,200,0.25)'],
+            personality: 'Spooky! Barely visible. Bonds mysteriously.',
+            bonds: { chat: 2, feed: 0, pet: 3, trick: 2, drink: 0, play: 3 } },
+};
+
+// Unlock system
+const unlockConditions = {
+  tan: { unlocked: true },
+  pink: { unlocked: true },
+  blue: { unlocked: true },
+  green: { unlocked: true },
+  purple: { unlocked: true },
+  orange: { unlocked: true },
+  gray: { unlocked: true },
+  black: { unlocked: true },
+  gold: { unlocked: true },
+  red: { unlocked: true },
+  mint: { unlocked: true },
+  peach: { unlocked: true },
+  navy: { unlocked: true },
+  lime: { unlocked: true },
+  rose: { unlocked: true },
+  ice: { unlocked: true },
+  cherry: { unlocked: true },
+  cream: { unlocked: true },
+  brown: { unlocked: true },
+  lavender: { unlocked: true },
+  coral: { unlocked: true },
+  sunset: { requirement: 'Do 15 tricks', stat: 'tricks', goal: 15 },
+  ocean: { requirement: 'Give water 10 times', stat: 'drinks', goal: 10 },
+  galaxy: { requirement: 'Send 100 messages', stat: 'messages', goal: 100 },
+  rainbow: { requirement: 'Do 25 tricks', stat: 'tricks', goal: 25 },
+  ghost: { requirement: 'Sleep 10 times', stat: 'sleeps', goal: 10 },
+};
+
+const stats = { feeds: 0, messages: 0, tricks: 0, pets: 0, sleeps: 0, drinks: 0 };
+
+function showToast(text) {
+  const toast = document.createElement('div');
+  toast.className = 'unlock-toast';
+  toast.textContent = text;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function checkUnlocks() {
+  for (const [color, cond] of Object.entries(unlockConditions)) {
+    if (cond.unlocked) continue;
+    if (stats[cond.stat] >= cond.goal) {
+      cond.unlocked = true;
+      const swatch = document.querySelector(`[data-stub="${color}"]`);
+      if (swatch) {
+        swatch.classList.remove('locked');
+        swatch.title = stubColors[color].name;
+      }
+      showToast(`Unlocked ${stubColors[color].name}! (${cond.requirement})`);
+    }
+  }
+}
+
+function trackStat(stat) {
+  stats[stat]++;
+  checkUnlocks();
+}
+
+const stubBody = document.querySelector('.stub-body');
+const legs = document.querySelectorAll('.leg');
+const swatches = document.querySelectorAll('.color-swatch');
+
+function setStubColor(name) {
+  const c = stubColors[name];
+  stubBody.style.background = `radial-gradient(ellipse at 50% 60%, ${c.body[0]}, ${c.body[1]})`;
+  stubBody.style.setProperty('--stripe-color', c.stripe);
+  legs.forEach(leg => {
+    leg.style.background = `radial-gradient(ellipse at 50% 40%, ${c.leg[0]}, ${c.leg[1]})`;
+  });
+  // Update stripe color via a dynamic style
+  let stripeStyle = document.getElementById('stripe-override');
+  if (!stripeStyle) {
+    stripeStyle = document.createElement('style');
+    stripeStyle.id = 'stripe-override';
+    document.head.appendChild(stripeStyle);
+  }
+  const mouthColor = c.mouth || c.stripe;
+  stripeStyle.textContent = `.stub-body::before { background: ${c.stripe} !important; }
+    .mouth { border-color: ${mouthColor} !important; }`;
+}
+
+swatches.forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    const color = swatch.dataset.stub;
+    const cond = unlockConditions[color];
+    if (!cond.unlocked) {
+      showToast(`Locked! ${cond.requirement} to unlock.`);
+      return;
+    }
+    swatches.forEach(s => s.classList.remove('active'));
+    swatch.classList.add('active');
+    setStubColor(color);
+    currentStubKey = color;
+    updateFriendshipUI();
+    const stubName = stubColors[color].name;
+    document.querySelector('h1').textContent = stubName + ' Chat';
+    addMessage(`*${stubName} appears!* Mrrp! I'm ${stubName}!`, 'stub');
+  });
+});
+
+// Friendship system
+const friendshipLevels = [
+  { name: 'Stranger',    threshold: 0 },
+  { name: 'Acquaintance', threshold: 20 },
+  { name: 'Buddy',       threshold: 50 },
+  { name: 'Best Friend', threshold: 100 },
+  { name: 'Soulmate',    threshold: 175 },
+];
+
+const friendshipPerStub = {};
+let currentStubKey = 'tan';
+
+function getFriendship() {
+  if (!friendshipPerStub[currentStubKey]) friendshipPerStub[currentStubKey] = 0;
+  return friendshipPerStub[currentStubKey];
+}
+
+function getFriendshipLevel(xp) {
+  let level = 0;
+  for (let i = friendshipLevels.length - 1; i >= 0; i--) {
+    if (xp >= friendshipLevels[i].threshold) { level = i; break; }
+  }
+  return level;
+}
+
+function updateFriendshipUI() {
+  const xp = getFriendship();
+  const level = getFriendshipLevel(xp);
+  const hearts = document.querySelectorAll('.friendship-heart');
+  hearts.forEach((h, i) => {
+    h.classList.toggle('filled', i <= level);
+    h.classList.toggle('empty', i > level);
+  });
+  const label = document.getElementById('friendshipLabel');
+  label.textContent = stubColors[currentStubKey].name + ' - ' + friendshipLevels[level].name;
+  label.title = stubColors[currentStubKey].personality;
+
+  // Progress bar within current level
+  const currentThreshold = friendshipLevels[level].threshold;
+  const nextThreshold = level < 4 ? friendshipLevels[level + 1].threshold : friendshipLevels[4].threshold + 50;
+  const progress = ((xp - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+  document.getElementById('friendshipFill').style.width = Math.min(progress, 100) + '%';
+}
+
+function addFriendship(bondType) {
+  const amount = stubColors[currentStubKey].bonds[bondType] || 1;
+  const oldLevel = getFriendshipLevel(getFriendship());
+  if (!friendshipPerStub[currentStubKey]) friendshipPerStub[currentStubKey] = 0;
+  friendshipPerStub[currentStubKey] += amount;
+  const newLevel = getFriendshipLevel(getFriendship());
+  updateFriendshipUI();
+  if (newLevel > oldLevel) {
+    const popup = document.createElement('div');
+    popup.className = 'friendship-level-up';
+    popup.innerHTML = `&#10084; Level Up! &#10084;<br>${friendshipLevels[newLevel].name}!`;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 1500);
+  }
+}
+
+updateFriendshipUI();
+
+// Sleep system
+let sleeping = false;
+const zzzEls = [];
+
+function startSleep() {
+  trackStat('sleeps');
+  sleeping = true;
+  stub.classList.add('sleeping');
+  for (let i = 0; i < 3; i++) {
+    const z = document.createElement('div');
+    z.className = 'zzz';
+    z.textContent = 'z';
+    stub.appendChild(z);
+    zzzEls.push(z);
+  }
+}
+
+function wakeUp() {
+  sleeping = false;
+  stub.classList.remove('sleeping');
+  zzzEls.forEach(z => z.remove());
+  zzzEls.length = 0;
+}
+
+// Hunger system
+let hunger = 50;
+const hungerFill = document.getElementById('hungerFill');
+const thirstFill = document.getElementById('thirstFill');
+let thirst = 50;
+
+function updateThirst(amount) {
+  thirst = Math.min(100, Math.max(0, thirst + amount));
+  thirstFill.style.width = thirst + '%';
+}
+
+function spawnWater() {
+  for (let i = 0; i < 4; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'water-particle';
+    drop.style.left = (55 + Math.random() * 50) + 'px';
+    drop.style.top = '15px';
+    drop.style.animationDelay = (i * 0.1) + 's';
+    stub.appendChild(drop);
+    drop.addEventListener('animationend', () => drop.remove());
+  }
+}
+
+function drinkWater() {
+  trackStat('drinks');
+  addFriendship('drink');
+  spawnWater();
+  updateThirst(20);
+  stub.classList.remove('munching');
+  void stub.offsetWidth;
+  stub.classList.add('munching');
+  stub.addEventListener('animationend', () => stub.classList.remove('munching'), { once: true });
+  const drinkResponses = ["*slurp slurp* Mrrp!", "*drinks happily* Prrt!", "*lap lap lap* Mew!", "*gulps water* Prrrrr!"];
+  return drinkResponses[Math.floor(Math.random() * drinkResponses.length)];
+}
+
+const foods = {
+  berry:   { emoji: '🫐', amount: 15, responses: ["*nom nom nom* Mrrp! Berries!", "*munches happily* Prrt!"] },
+  apple:   { emoji: '🍎', amount: 15, responses: ["*crunch crunch* Mew!", "*chomps* Prrrt!"] },
+  fish:    { emoji: '🐟', amount: 25, responses: ["*gobbles it up* MRRP!!", "*devours fish* Prrrrrr!"] },
+  treat:   { emoji: '🍪', amount: 10, responses: ["*nibbles treat* Mrrp!", "*happy crunching* Prrt prrt!"] },
+  meat:    { emoji: '🍖', amount: 25, responses: ["*wolfs it down* MRRRRP!!", "*so happy* Prrrrrrr!"] },
+  cake:    { emoji: '🍰', amount: 20, responses: ["*messy eating* Mew mew!!", "*frosting everywhere* Prrt!"] },
+  pizza:   { emoji: '🍕', amount: 20, responses: ["*cheesy nom* Mrrrp!!", "*gobble gobble* Prrt!"] },
+  default: { emoji: '●', amount: 12, responses: ["*munch munch* Mrrp!", "*eats happily* Prrrt!"] },
+};
+
+function updateHunger(amount) {
+  hunger = Math.min(100, Math.max(0, hunger + amount));
+  hungerFill.style.width = hunger + '%';
+}
+
+function spawnFood() {
+  for (let i = 0; i < 5; i++) {
+    const pellet = document.createElement('div');
+    pellet.className = 'food-particle';
+    pellet.style.left = (50 + Math.random() * 60) + 'px';
+    pellet.style.top = '15px';
+    pellet.style.animationDelay = (i * 0.08) + 's';
+    stub.appendChild(pellet);
+    pellet.addEventListener('animationend', () => pellet.remove());
+  }
+}
+
+function feedStub(foodKey) {
+  const food = foods[foodKey] || foods.default;
+  trackStat('feeds');
+  addFriendship('feed');
+  spawnFood();
+  updateHunger(food.amount);
+  stub.classList.remove('munching');
+  void stub.offsetWidth;
+  stub.classList.add('munching');
+  stub.addEventListener('animationend', () => stub.classList.remove('munching'), { once: true });
+  return food.responses[Math.floor(Math.random() * food.responses.length)];
+}
+
+// Hunger and thirst decrease over time
+setInterval(() => { updateHunger(-2); updateThirst(-2); }, 15000);
+
+const tricks = {
+  spin:  { words: ['spin', 'twirl'], responses: ["*spins around* Mrrp!!", "*twirls proudly* Prrt!"] },
+  jump:  { words: ['jump', 'hop', 'leap'], responses: ["*jumps high* Mew!!", "*boing!* Mrrp!"] },
+  shake: { words: ['shake', 'wiggle'], responses: ["*shakes all over* Prrrrt!", "*wiggles intensely* Mrrp mrrp!"] },
+  roll:  { words: ['roll', 'roll over'], responses: ["*rolls over* Mrrrrp!", "*does a barrel roll* Prrt prrt!"] },
+  dance: { words: ['dance', 'boogie'], responses: ["*dances happily* Mew mew mew!", "*busts a move* Prrrrrt!"] },
+  squish: { words: ['squish', 'squash', 'squeeze'], responses: ["*squishes down* Mrrp!", "*gets all flat and round* Prrt!", "*pancake mode!* Mew!"] },
+};
+
+function doTrick(trickName) {
+  trackStat('tricks');
+  addFriendship('trick');
+  stub.classList.remove('trick-spin','trick-jump','trick-shake','trick-roll','trick-dance','trick-squish');
+  void stub.offsetWidth; // force reflow
+  stub.classList.add(`trick-${trickName}`);
+  stub.addEventListener('animationend', () => {
+    stub.classList.remove(`trick-${trickName}`);
+  }, { once: true });
+}
+
+function getResponse(userText) {
+  const lower = userText.toLowerCase().trim();
+
+  // Check for sleep/wake
+  if (lower.includes('wake') || lower.includes('get up')) {
+    if (sleeping) {
+      wakeUp();
+      return "*blinks groggily* Mrrp...? *yawns and stretches* Mew!";
+    }
+    return "*tilts head* I'm already awake! Mrrp!";
+  }
+  if (lower.includes('sleep') || lower.includes('nap') || lower.includes('bedtime') || lower.includes('night night') || lower.includes('goodnight')) {
+    if (!sleeping) {
+      startSleep();
+      return "*yawns big* Mrrrrp... *curls up* zzz...";
+    }
+    return "zzz... zzz...";
+  }
+  if (sleeping) {
+    const sleepyResponses = ["zzz... zzz...", "*snores softly* zzz...", "*mumbles in sleep* mrr... zzz..."];
+    return sleepyResponses[Math.floor(Math.random() * sleepyResponses.length)];
+  }
+
+  // Check for reading
+  if (lower.includes('book') || lower.includes('read') || lower.includes('story')) {
+    if (!reading) {
+      if (sleeping) { wakeUp(); }
+      startReading();
+      return "*picks up a tiny book* Mrrp! *opens it carefully and starts reading*";
+    } else {
+      return "*flips a page* Mrrp... *very focused*";
+    }
+  }
+  if (lower.includes('stop') && reading) {
+    stopReading();
+    return "*closes book gently* Mrrp! *looks up at you*";
+  }
+  if (reading && !lower.includes('stop')) {
+    stopReading();
+  }
+
+  // Check for toy throw
+  if (lower.includes('fetch') || lower.includes('throw') || lower.includes('catch') || lower.includes('ball') || lower.includes('toy')) {
+    throwToy();
+    return "*eyes go wide* Mrrp!! *wiggles and gets ready*";
+  }
+
+  // Check for water
+  if (lower.includes('water') || lower.includes('drink') || lower.includes('thirst')) {
+    return drinkWater();
+  }
+
+  // Check for feeding
+  const feedWords = ['feed', 'eat', 'food', 'hungry', 'snack'];
+  if (feedWords.some(w => lower.includes(w))) {
+    for (const key of Object.keys(foods)) {
+      if (key !== 'default' && lower.includes(key)) return feedStub(key);
+    }
+    if (hunger < 30) {
+      return feedStub('default');
+    }
+    return feedStub('default');
+  }
+  // Specific food mentions without feed keyword
+  for (const key of Object.keys(foods)) {
+    if (key !== 'default' && lower.includes(key)) return feedStub(key);
+  }
+
+  // Check for tricks
+  for (const [trickName, trick] of Object.entries(tricks)) {
+    if (trick.words.some(w => lower.includes(w))) {
+      doTrick(trickName);
+      return trick.responses[Math.floor(Math.random() * trick.responses.length)];
+    }
+  }
+
+  if (lower.includes('trick') || lower.includes('tricks')) {
+    return "*perks up* I can spin, jump, shake, roll over, dance, and sit! Mrrp!";
+  }
+
+  if (greetings.some(g => lower.startsWith(g))) {
+    return greetingResponses[Math.floor(Math.random() * greetingResponses.length)];
+  }
+  if (lower.includes('love') || lower.includes('cute') || lower.includes('adorable')) {
+    return "*purrs SO loudly* Prrrrrrrrr!!";
+  }
+  if (lower.includes('name')) {
+    return "*puffs up proudly* Stub! Mrrp!";
+  }
+  if (lower.includes('birthday') || lower.includes('happy birthday')) {
+    stub.classList.add('birthday');
+    doTrick('dance');
+    setTimeout(() => stub.classList.remove('birthday'), 8000);
+    return "*puts on party hat* Mrrp mrrp!! HAPPY BIRTHDAY!! *dances and bounces* Prrrrrt!!";
+  }
+  if (lower.includes('bye') || lower.includes('goodbye')) {
+    stub.classList.add('sad');
+    // Spawn tears
+    const eyePositions = [{left: 58, top: 70}, {left: 98, top: 70}];
+    eyePositions.forEach((pos, i) => {
+      const tear = document.createElement('div');
+      tear.className = 'tear';
+      tear.style.left = pos.left + 'px';
+      tear.style.top = pos.top + 'px';
+      tear.style.animationDelay = (i * 0.3) + 's';
+      stub.appendChild(tear);
+      tear.addEventListener('animationend', () => tear.remove());
+    });
+    setTimeout(() => stub.classList.remove('sad'), 3000);
+    return "*sad eyes* Mew... *waves tiny paw*";
+  }
+  if (lower.includes('?')) {
+    return "*tilts head* Mrrrp?? *blinks*";
+  }
+  if (thirst < 20) {
+    const thirstyLines = ["*licks dry lips* Mrrp...", "*looks at water longingly* Mew...", "*nudges water bowl* Prrt..."];
+    return thirstyLines[Math.floor(Math.random() * thirstyLines.length)];
+  }
+  if (hunger < 20) {
+    const hungryLines = ["*tummy growls* Mrrp...", "*looks at you with big sad eyes* Mew...", "*nudges your hand toward food* Prrt..."];
+    return hungryLines[Math.floor(Math.random() * hungryLines.length)];
+  }
+  return responses[Math.floor(Math.random() * responses.length)];
+}
+
+function send() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, 'user');
+  input.value = '';
+  trackStat('messages');
+  addFriendship('chat');
+
+  stub.classList.add('talking');
+  const delay = 500 + Math.random() * 800;
+
+  setTimeout(() => {
+    addMessage(getResponse(text), 'stub');
+    stub.classList.remove('talking');
+  }, delay);
+}
+
+sendBtn.addEventListener('click', send);
+input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+
+// Reading
+let reading = false;
+
+function startReading() {
+  reading = true;
+  stub.classList.add('reading');
+}
+
+function stopReading() {
+  reading = false;
+  stub.classList.remove('reading');
+}
+
+// Toy throw
+function throwToy() {
+  if (sleeping) return;
+  const ball = document.createElement('div');
+  ball.className = 'toy-ball';
+  document.body.appendChild(ball);
+
+  const stubRect = stub.getBoundingClientRect();
+  const startX = stubRect.left - 100;
+  const startY = stubRect.top + 60;
+  const peakX = stubRect.left + 200;
+  const peakY = stubRect.top - 100;
+  const endX = stubRect.left + 250 + Math.random() * 80;
+  const endY = stubRect.top + 80;
+
+  ball.style.left = startX + 'px';
+  ball.style.top = startY + 'px';
+
+  const duration = 800;
+  const start = performance.now();
+
+  function animateBall(now) {
+    const t = Math.min((now - start) / duration, 1);
+    // Quadratic bezier arc
+    const x = (1-t)*(1-t)*startX + 2*(1-t)*t*peakX + t*t*endX;
+    const y = (1-t)*(1-t)*startY + 2*(1-t)*t*peakY + t*t*endY;
+    ball.style.left = x + 'px';
+    ball.style.top = y + 'px';
+    if (t < 1) {
+      requestAnimationFrame(animateBall);
+    } else {
+      // Stub chases to ball
+      setTimeout(() => {
+        stub.style.transition = 'transform 0.5s ease-in-out';
+        stub.style.transform = `translateX(${endX - stubRect.left - 60}px)`;
+        setTimeout(() => {
+          // Catch!
+          ball.remove();
+          stub.classList.add('catch-jump');
+          addFriendship('play');
+          const catchResponses = ["*catches the ball!* Mrrp!!", "*grabs it!* Prrt prrt!", "*leaps and catches!* Mew!!", "*brings it back proudly* Mrrp!"];
+          addMessage(catchResponses[Math.floor(Math.random() * catchResponses.length)], 'stub');
+
+          setTimeout(() => {
+            stub.classList.remove('catch-jump');
+            stub.style.transition = 'transform 0.6s ease-in-out';
+            stub.style.transform = 'translateX(0)';
+            setTimeout(() => { stub.style.transition = ''; }, 600);
+          }, 500);
+        }, 500);
+      }, 200);
+    }
+  }
+  requestAnimationFrame(animateBall);
+}
+
+// Purr sound via Web Audio
+function playPurr() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const duration = 0.6;
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(28, ctx.currentTime);
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(32, ctx.currentTime);
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+  gain.gain.setValueAtTime(0.3, ctx.currentTime + duration - 0.15);
+  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(ctx.destination);
+  osc1.start(ctx.currentTime);
+  osc2.start(ctx.currentTime);
+  osc1.stop(ctx.currentTime + duration);
+  osc2.stop(ctx.currentTime + duration);
+}
+
+// Tap/pet Stub
+document.querySelector('.stub-body').addEventListener('click', () => {
+  if (sleeping) return;
+  trackStat('pets');
+  addFriendship('pet');
+  playPurr();
+  stub.classList.remove('petted');
+  void stub.offsetWidth;
+  stub.classList.add('petted');
+  stub.addEventListener('animationend', () => stub.classList.remove('petted'), { once: true });
+
+  const petResponses = ["*purrs loudly* Prrrrrrr...", "*leans into your hand* Mrrp!", "*happy vibrating* Prrrrt!", "*closes eyes in bliss* Mrrrrr...", "*nuzzles your finger* Mew!"];
+  addMessage(petResponses[Math.floor(Math.random() * petResponses.length)], 'stub');
+
+  // Spawn hearts
+  for (let i = 0; i < 3; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'heart-particle';
+    heart.textContent = '\u2764';
+    heart.style.left = (40 + Math.random() * 80) + 'px';
+    heart.style.top = (10 + Math.random() * 20) + 'px';
+    heart.style.animationDelay = (i * 0.15) + 's';
+    stub.appendChild(heart);
+    heart.addEventListener('animationend', () => heart.remove());
+  }
+});
+
+// Playground
+const playground = document.getElementById('playground');
+const playgroundArea = document.getElementById('playgroundArea');
+const pgStub = document.getElementById('pgStub');
+const pgBody = document.getElementById('pgBody');
+const pgLegs = pgStub.querySelectorAll('.pg-leg');
+const pgTitle = document.getElementById('pgTitle');
+
+function updatePlaygroundStub() {
+  const c = stubColors[currentStubKey];
+  pgBody.style.background = `radial-gradient(ellipse at 50% 60%, ${c.body[0]}, ${c.body[1]})`;
+  pgLegs.forEach(leg => {
+    leg.style.background = `radial-gradient(ellipse at 50% 40%, ${c.leg[0]}, ${c.leg[1]})`;
+  });
+  let pgStripe = document.getElementById('pg-stripe-style');
+  if (!pgStripe) {
+    pgStripe = document.createElement('style');
+    pgStripe.id = 'pg-stripe-style';
+    document.head.appendChild(pgStripe);
+  }
+  pgStripe.textContent = `.pg-stub-body::before { background: ${c.stripe}; }`;
+  pgTitle.textContent = c.name + "'s Playground";
+}
+
+let groundY = 0;
+let grassTop = 0;
+
+document.getElementById('openPlayground').addEventListener('click', () => {
+  updatePlaygroundStub();
+  playground.classList.add('open');
+  const area = playgroundArea.getBoundingClientRect();
+  groundY = area.height - 90;
+  grassTop = area.height * 0.55;
+  pgStub.style.left = (area.width / 2 - 40) + 'px';
+  pgStub.style.top = groundY + 'px';
+  spawnPlaygroundToys(area);
+});
+
+document.getElementById('closePlayground').addEventListener('click', () => {
+  playground.classList.remove('open');
+  // Clean up toys
+  playgroundArea.querySelectorAll('.pg-toy').forEach(t => t.remove());
+});
+
+// Playground toys
+function spawnPlaygroundToys(area) {
+  playgroundArea.querySelectorAll('.pg-toy').forEach(t => t.remove());
+  const toys = [
+    { emoji: '🔴', x: area.width * 0.2, label: 'ball' },
+    { emoji: '🧶', x: area.width * 0.5, label: 'yarn' },
+    { emoji: '🦋', x: area.width * 0.75, label: 'butterfly' },
+  ];
+  toys.forEach(toy => {
+    const el = document.createElement('div');
+    el.className = 'pg-toy';
+    el.dataset.toy = toy.label;
+    el.textContent = toy.emoji;
+    el.style.cssText = `position:absolute;font-size:1.6rem;cursor:pointer;z-index:3;
+      left:${toy.x}px;top:${area.height - 50}px;transition:left 0.3s,top 0.3s;`;
+    if (toy.label === 'butterfly') {
+      el.style.top = (area.height - 120) + 'px';
+      el.style.animation = 'butterflyFloat 3s ease-in-out infinite';
+    }
+    playgroundArea.appendChild(el);
+  });
+}
+
+let pawInterval = null;
+let pgBusy = false;
+
+function runStubTo(targetX, callback, targetY) {
+  const rect = playgroundArea.getBoundingClientRect();
+  const ty = targetY !== undefined ? targetY : (parseFloat(pgStub.style.top) || groundY);
+  pgStub.classList.remove('idle');
+  pgStub.classList.add('running');
+
+  const startX = parseFloat(pgStub.style.left) || rect.width / 2;
+  const startY = parseFloat(pgStub.style.top) || groundY;
+
+  if (pawInterval) clearInterval(pawInterval);
+  let pawCount = 0;
+  pawInterval = setInterval(() => {
+    const progress = pawCount / 8;
+    if (progress > 1) { clearInterval(pawInterval); return; }
+    const px = startX + (targetX - startX) * progress + 35;
+    const py = startY + (ty - startY) * progress + 85;
+    const paw = document.createElement('div');
+    paw.className = 'paw-print';
+    paw.style.left = (px + Math.random() * 10 - 5) + 'px';
+    paw.style.top = py + 'px';
+    playgroundArea.appendChild(paw);
+    setTimeout(() => paw.remove(), 2000);
+    pawCount++;
+  }, 75);
+
+  if (targetX < startX) {
+    pgStub.style.transform = 'scaleX(-1)';
+  } else {
+    pgStub.style.transform = 'scaleX(1)';
+  }
+
+  pgStub.style.left = targetX + 'px';
+  pgStub.style.top = ty + 'px';
+
+  setTimeout(() => {
+    pgStub.classList.remove('running');
+    pgStub.classList.add('idle');
+    pgStub.style.transform = '';
+    if (callback) callback();
+  }, 650);
+}
+
+// Click ground to move — anywhere on the grass
+playgroundArea.addEventListener('click', (e) => {
+  if (pgBusy) return;
+  if (e.target.classList.contains('pg-toy')) return;
+  const rect = playgroundArea.getBoundingClientRect();
+  const targetX = Math.max(0, Math.min(rect.width - 80, e.clientX - rect.left - 40));
+  const clickY = e.clientY - rect.top - 45;
+  const targetY = Math.max(grassTop - 45, Math.min(rect.height - 90, clickY));
+  runStubTo(targetX, null, targetY);
+});
+
+// Click toys to interact
+playgroundArea.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('pg-toy')) return;
+  if (pgBusy) return;
+  pgBusy = true;
+  const toy = e.target;
+  const toyX = parseFloat(toy.style.left) - 40;
+  const toyType = toy.dataset.toy;
+
+  const toyInteractions = { ball: 0, yarn: 0, butterfly: 0 };
+
+  runStubTo(toyX, () => {
+    const rect = playgroundArea.getBoundingClientRect();
+    const idx = toyInteractions[toyType] || 0;
+    toyInteractions[toyType] = idx + 1;
+
+    if (toyType === 'ball') {
+      const action = idx % 4;
+      if (action === 0) {
+        // Kick it far
+        const newX = Math.random() * (rect.width - 60);
+        toy.style.left = newX + 'px';
+        toy.style.transition = 'left 0.5s ease-out';
+        setTimeout(() => { toy.style.transition = 'left 0.3s,top 0.3s'; pgBusy = false; }, 600);
+      } else if (action === 1) {
+        // Bounce it up and down
+        toy.style.animation = 'ballBounce 0.3s ease-in-out 4';
+        setTimeout(() => { toy.style.animation = ''; pgBusy = false; }, 1200);
+      } else if (action === 2) {
+        // Roll it back and forth while chasing
+        const newX = Math.random() * (rect.width - 60);
+        toy.style.left = newX + 'px';
+        toy.style.transition = 'left 0.8s ease-in-out';
+        setTimeout(() => {
+          runStubTo(newX - 40, () => { toy.style.transition = 'left 0.3s,top 0.3s'; pgBusy = false; });
+        }, 400);
+      } else {
+        // Sit on it
+        toy.style.transition = 'transform 0.3s';
+        toy.style.transform = 'scale(0.6)';
+        pgStub.style.transition = 'top 0.3s';
+        pgStub.style.top = (groundY - 8) + 'px';
+        setTimeout(() => {
+          toy.style.transform = '';
+          pgStub.style.top = groundY + 'px';
+          pgBusy = false;
+        }, 1500);
+      }
+    } else if (toyType === 'yarn') {
+      const action = idx % 4;
+      if (action === 0) {
+        // Bat at it
+        toy.style.animation = 'yarnJiggle 0.15s 6 alternate';
+        setTimeout(() => { toy.style.animation = ''; pgBusy = false; }, 1000);
+      } else if (action === 1) {
+        // Get tangled — stub spins
+        pgStub.style.animation = 'none';
+        void pgStub.offsetWidth;
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'spin 0.8s ease-in-out';
+        toy.style.animation = 'yarnUnravel 1s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          toy.style.animation = '';
+          pgStub.classList.add('idle');
+          pgBusy = false;
+        }, 1000);
+      } else if (action === 2) {
+        // Drag it around
+        const newX = parseFloat(toy.style.left) + (Math.random() > 0.5 ? 80 : -80);
+        const clampedX = Math.max(20, Math.min(rect.width - 60, newX));
+        toy.style.left = clampedX + 'px';
+        runStubTo(clampedX - 40, () => { pgBusy = false; });
+      } else {
+        // Roll around in it
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'roll 1s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          pgBusy = false;
+        }, 1000);
+      }
+    } else if (toyType === 'butterfly') {
+      const action = idx % 4;
+      if (action === 0) {
+        // It flies away
+        const newX = Math.random() * (rect.width - 60);
+        const newY = rect.height - 80 - Math.random() * 80;
+        toy.style.left = newX + 'px';
+        toy.style.top = newY + 'px';
+        toy.style.animation = 'none';
+        setTimeout(() => { toy.style.animation = 'butterflyFloat 3s ease-in-out infinite'; pgBusy = false; }, 400);
+      } else if (action === 1) {
+        // Lands on stub's head!
+        toy.style.animation = 'none';
+        const stubLeft = parseFloat(pgStub.style.left) + 30;
+        toy.style.left = stubLeft + 'px';
+        toy.style.top = (groundY - 20) + 'px';
+        setTimeout(() => {
+          const newX = Math.random() * (rect.width - 60);
+          const newY = rect.height - 80 - Math.random() * 80;
+          toy.style.left = newX + 'px';
+          toy.style.top = newY + 'px';
+          setTimeout(() => { toy.style.animation = 'butterflyFloat 3s ease-in-out infinite'; pgBusy = false; }, 300);
+        }, 2000);
+      } else if (action === 2) {
+        // Stub jumps to catch, misses
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'jump 0.6s ease-in-out';
+        const newX = Math.random() * (rect.width - 60);
+        const newY = rect.height - 100 - Math.random() * 60;
+        toy.style.left = newX + 'px';
+        toy.style.top = newY + 'px';
+        toy.style.animation = 'none';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          toy.style.animation = 'butterflyFloat 3s ease-in-out infinite';
+          pgBusy = false;
+        }, 700);
+      } else {
+        // Stub and butterfly stare at each other
+        toy.style.animation = 'none';
+        const stubLeft = parseFloat(pgStub.style.left) + 90;
+        toy.style.left = stubLeft + 'px';
+        toy.style.top = (groundY + 20) + 'px';
+        setTimeout(() => {
+          const newX = Math.random() * (rect.width - 60);
+          toy.style.left = newX + 'px';
+          toy.style.top = (rect.height - 100) + 'px';
+          setTimeout(() => { toy.style.animation = 'butterflyFloat 3s ease-in-out infinite'; pgBusy = false; }, 300);
+        }, 1800);
+      }
+    } else {
+      pgBusy = false;
+    }
+  });
+});
+
+// Initial greeting
+setTimeout(() => addMessage("*looks up at you* Mrrp!", 'stub'), 600);
+</script>
+
+</body>
+</html>
