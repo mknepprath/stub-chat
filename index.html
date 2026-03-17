@@ -948,6 +948,72 @@
     to { transform: rotate(10deg); }
   }
 
+  /* Furniture */
+  .pg-furniture {
+    position: absolute;
+    font-size: 2rem;
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.3s;
+    user-select: none;
+  }
+
+  .pg-furniture:hover { transform: scale(1.15); }
+
+  .pg-furniture .furniture-label {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.55rem;
+    color: #5a4a3a;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .pg-furniture:hover .furniture-label { opacity: 1; }
+
+  @keyframes furnitureWobble {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+
+  @keyframes scratchShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+  }
+
+  @keyframes lampTip {
+    0% { transform: rotate(0deg); }
+    30% { transform: rotate(25deg); }
+    50% { transform: rotate(-10deg); }
+    70% { transform: rotate(15deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @keyframes plantRustle {
+    0%, 100% { transform: scaleX(1); }
+    25% { transform: scaleX(1.1) scaleY(0.95); }
+    50% { transform: scaleX(0.9) scaleY(1.05); }
+    75% { transform: scaleX(1.05) scaleY(0.98); }
+  }
+
+  @keyframes couchSink {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px) scaleY(0.92); }
+  }
+
+  @keyframes stubSnooze {
+    0%, 100% { transform: scaleY(1) scaleX(1); }
+    50% { transform: scaleY(1.04) scaleX(0.97); }
+  }
+
   /* --- Chat UI --- */
   .chat-box {
     width: 100%;
@@ -1019,6 +1085,125 @@
   }
 
   .chat-input button:hover { background: #5a4a3a; }
+
+  /* Accessories */
+  .accessory {
+    position: absolute;
+    z-index: 6;
+    pointer-events: none;
+    display: none;
+    font-size: 1.6rem;
+  }
+
+  .accessory.visible { display: block; }
+
+  .acc-hat {
+    bottom: 115px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .acc-glasses {
+    bottom: 67px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+  }
+
+  .acc-bow {
+    bottom: 103px;
+    right: 14px;
+    font-size: 1.2rem;
+  }
+
+  .acc-crown {
+    bottom: 121px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.4rem;
+  }
+
+  .acc-scarf {
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.3rem;
+  }
+
+  .acc-bandana {
+    bottom: 110px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-5deg);
+    font-size: 1.1rem;
+  }
+
+  .acc-monocle {
+    bottom: 70px;
+    right: 18px;
+    font-size: 1rem;
+  }
+
+  .acc-flower {
+    bottom: 105px;
+    left: 16px;
+    font-size: 1.1rem;
+  }
+
+  /* Accessory picker */
+  .accessory-picker {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 0.5rem;
+    max-width: 320px;
+  }
+
+  .acc-slot {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    background: #f0e6d2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+  }
+
+  .acc-slot:hover { transform: scale(1.15); }
+  .acc-slot.active { border-color: #5a4a3a; background: #e8d5b0; }
+
+  .acc-slot.locked {
+    filter: brightness(0.5);
+    cursor: not-allowed;
+  }
+
+  .acc-slot.locked::after {
+    content: '🔒';
+    position: absolute;
+    font-size: 0.5rem;
+    bottom: -2px;
+    right: -2px;
+  }
+
+  .acc-slot .acc-tooltip {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.55rem;
+    color: #7a5c3a;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .acc-slot:hover .acc-tooltip { opacity: 1; }
 </style>
 </head>
 <body>
@@ -1038,6 +1223,14 @@
   <div class="mouth"></div>
   <div class="book">📖</div>
   <div class="party-hat"></div>
+  <div class="accessory acc-hat" id="accHat">🎩</div>
+  <div class="accessory acc-glasses" id="accGlasses">🤓</div>
+  <div class="accessory acc-bow" id="accBow">🎀</div>
+  <div class="accessory acc-crown" id="accCrown">👑</div>
+  <div class="accessory acc-scarf" id="accScarf">🧣</div>
+  <div class="accessory acc-bandana" id="accBandana">🏴‍☠️</div>
+  <div class="accessory acc-monocle" id="accMonocle">🧐</div>
+  <div class="accessory acc-flower" id="accFlower">🌸</div>
 </div>
 
 <div class="color-picker" id="colorPicker">
@@ -1067,6 +1260,17 @@
   <div class="color-swatch locked" data-stub="galaxy" style="background: linear-gradient(135deg, #a855f7, #ec4899);" title="Send 100 messages"></div>
   <div class="color-swatch locked" data-stub="rainbow" style="background: linear-gradient(135deg, #ff6b6b, #ffd93d, #48dbfb, #ff9ff3);" title="Do 25 tricks"></div>
   <div class="color-swatch locked" data-stub="ghost" style="background: radial-gradient(circle, rgba(200,200,220,0.6), rgba(180,180,200,0.3)); border: 1px dashed #aaa;" title="Sleep 10 times"></div>
+</div>
+<div class="accessory-picker" id="accessoryPicker">
+  <div class="acc-slot locked" data-acc="none" title="None">❌<span class="acc-tooltip">None</span></div>
+  <div class="acc-slot locked" data-acc="hat" title="Pet 15 times">🎩<span class="acc-tooltip">Pet 15 times</span></div>
+  <div class="acc-slot locked" data-acc="glasses" title="Send 30 messages">🤓<span class="acc-tooltip">Send 30 messages</span></div>
+  <div class="acc-slot locked" data-acc="bow" title="Pet 25 times">🎀<span class="acc-tooltip">Pet 25 times</span></div>
+  <div class="acc-slot locked" data-acc="crown" title="Reach Soulmate">👑<span class="acc-tooltip">Reach Soulmate</span></div>
+  <div class="acc-slot locked" data-acc="scarf" title="Feed 15 times">🧣<span class="acc-tooltip">Feed 15 times</span></div>
+  <div class="acc-slot locked" data-acc="bandana" title="Do 10 tricks">🏴‍☠️<span class="acc-tooltip">Do 10 tricks</span></div>
+  <div class="acc-slot locked" data-acc="monocle" title="Send 75 messages">🧐<span class="acc-tooltip">Send 75 messages</span></div>
+  <div class="acc-slot locked" data-acc="flower" title="Give water 15 times">🌸<span class="acc-tooltip">Give water 15 times</span></div>
 </div>
 <div class="friendship-container" id="friendshipContainer">
   <div class="friendship-label" id="friendshipLabel">Stranger</div>
@@ -1306,7 +1510,77 @@ function checkUnlocks() {
 function trackStat(stat) {
   stats[stat]++;
   checkUnlocks();
+  checkAccessoryUnlocks();
 }
+
+// Accessory system
+const accessories = {
+  none:     { label: 'None', elId: null, unlocked: true },
+  hat:      { label: 'Top Hat', elId: 'accHat', stat: 'pets', goal: 15, requirement: 'Pet 15 times' },
+  glasses:  { label: 'Glasses', elId: 'accGlasses', stat: 'messages', goal: 30, requirement: 'Send 30 messages' },
+  bow:      { label: 'Bow', elId: 'accBow', stat: 'pets', goal: 25, requirement: 'Pet 25 times' },
+  crown:    { label: 'Crown', elId: 'accCrown', stat: 'friendship', goal: 175, requirement: 'Reach Soulmate' },
+  scarf:    { label: 'Scarf', elId: 'accScarf', stat: 'feeds', goal: 15, requirement: 'Feed 15 times' },
+  bandana:  { label: 'Bandana', elId: 'accBandana', stat: 'tricks', goal: 10, requirement: 'Do 10 tricks' },
+  monocle:  { label: 'Monocle', elId: 'accMonocle', stat: 'messages', goal: 75, requirement: 'Send 75 messages' },
+  flower:   { label: 'Flower', elId: 'accFlower', stat: 'drinks', goal: 15, requirement: 'Give water 15 times' },
+};
+
+let currentAccessory = 'none';
+const accSlots = document.querySelectorAll('.acc-slot');
+
+function checkAccessoryUnlocks() {
+  for (const [key, acc] of Object.entries(accessories)) {
+    if (acc.unlocked) continue;
+    let current = 0;
+    if (acc.stat === 'friendship') {
+      current = getFriendship ? getFriendship() : 0;
+    } else {
+      current = stats[acc.stat] || 0;
+    }
+    if (current >= acc.goal) {
+      acc.unlocked = true;
+      const slot = document.querySelector(`[data-acc="${key}"]`);
+      if (slot) {
+        slot.classList.remove('locked');
+        slot.title = acc.label;
+        const tooltip = slot.querySelector('.acc-tooltip');
+        if (tooltip) tooltip.textContent = acc.label;
+      }
+      showToast(`Accessory unlocked: ${acc.label}! (${acc.requirement})`);
+    }
+  }
+}
+
+function setAccessory(key) {
+  // Hide all accessories
+  for (const [k, acc] of Object.entries(accessories)) {
+    if (acc.elId) {
+      document.getElementById(acc.elId).classList.remove('visible');
+    }
+  }
+  currentAccessory = key;
+  if (key !== 'none' && accessories[key].elId) {
+    document.getElementById(accessories[key].elId).classList.add('visible');
+  }
+  accSlots.forEach(s => s.classList.toggle('active', s.dataset.acc === key));
+}
+
+accSlots.forEach(slot => {
+  slot.addEventListener('click', () => {
+    const key = slot.dataset.acc;
+    const acc = accessories[key];
+    if (!acc.unlocked) {
+      showToast(`Locked! ${acc.requirement} to unlock.`);
+      return;
+    }
+    setAccessory(key);
+  });
+});
+
+// "None" is always unlocked
+accessories.none.unlocked = true;
+document.querySelector('[data-acc="none"]').classList.remove('locked');
 
 const stubBody = document.querySelector('.stub-body');
 const legs = document.querySelectorAll('.leg');
@@ -1408,9 +1682,11 @@ function addFriendship(bondType) {
     document.body.appendChild(popup);
     setTimeout(() => popup.remove(), 1500);
   }
+  checkAccessoryUnlocks();
 }
 
 updateFriendshipUI();
+checkAccessoryUnlocks();
 
 // Sleep system
 let sleeping = false;
@@ -1842,17 +2118,21 @@ document.getElementById('openPlayground').addEventListener('click', () => {
 
 document.getElementById('closePlayground').addEventListener('click', () => {
   playground.classList.remove('open');
-  // Clean up toys
+  // Clean up toys and furniture
   playgroundArea.querySelectorAll('.pg-toy').forEach(t => t.remove());
+  playgroundArea.querySelectorAll('.pg-furniture').forEach(t => t.remove());
 });
 
 // Playground toys
 function spawnPlaygroundToys(area) {
   playgroundArea.querySelectorAll('.pg-toy').forEach(t => t.remove());
+  playgroundArea.querySelectorAll('.pg-furniture').forEach(t => t.remove());
+  const grassMin = area.height * 0.6;
+  const grassMax = area.height - 50;
   const toys = [
-    { emoji: '🔴', x: area.width * 0.2, label: 'ball' },
-    { emoji: '🧶', x: area.width * 0.5, label: 'yarn' },
-    { emoji: '🦋', x: area.width * 0.75, label: 'butterfly' },
+    { emoji: '🔴', x: area.width * 0.15, y: grassMin + (grassMax - grassMin) * 0.6, label: 'ball' },
+    { emoji: '🧶', x: area.width * 0.55, y: grassMin + (grassMax - grassMin) * 0.3, label: 'yarn' },
+    { emoji: '🦋', x: area.width * 0.8, label: 'butterfly' },
   ];
   toys.forEach(toy => {
     const el = document.createElement('div');
@@ -1860,14 +2140,235 @@ function spawnPlaygroundToys(area) {
     el.dataset.toy = toy.label;
     el.textContent = toy.emoji;
     el.style.cssText = `position:absolute;font-size:1.6rem;cursor:pointer;z-index:3;
-      left:${toy.x}px;top:${area.height - 50}px;transition:left 0.3s,top 0.3s;`;
+      left:${toy.x}px;top:${toy.y || grassMin + 10}px;transition:left 0.3s,top 0.3s;`;
     if (toy.label === 'butterfly') {
-      el.style.top = (area.height - 120) + 'px';
+      el.style.top = (grassMin - 40) + 'px';
       el.style.animation = 'butterflyFloat 3s ease-in-out infinite';
     }
     playgroundArea.appendChild(el);
   });
+  spawnFurniture(area, grassMin, grassMax);
 }
+
+// Furniture system
+const furnitureInteractions = { bed: 0, scratcher: 0, couch: 0, lamp: 0, plant: 0 };
+
+function spawnFurniture(area, grassMin, grassMax) {
+  const furniture = [
+    { emoji: '🛏️', x: area.width * 0.05, y: grassMin + (grassMax - grassMin) * 0.2, label: 'bed', name: 'Bed' },
+    { emoji: '🪵', x: area.width * 0.35, y: grassMin + (grassMax - grassMin) * 0.7, label: 'scratcher', name: 'Scratcher' },
+    { emoji: '🛋️', x: area.width * 0.7, y: grassMin + (grassMax - grassMin) * 0.15, label: 'couch', name: 'Couch' },
+    { emoji: '💡', x: area.width * 0.25, y: grassMin + (grassMax - grassMin) * 0.05, label: 'lamp', name: 'Lamp' },
+    { emoji: '🪴', x: area.width * 0.85, y: grassMin + (grassMax - grassMin) * 0.55, label: 'plant', name: 'Plant' },
+  ];
+  furniture.forEach(f => {
+    const el = document.createElement('div');
+    el.className = 'pg-furniture';
+    el.dataset.furniture = f.label;
+    el.textContent = f.emoji;
+    const labelEl = document.createElement('span');
+    labelEl.className = 'furniture-label';
+    labelEl.textContent = f.name;
+    el.appendChild(labelEl);
+    el.style.left = f.x + 'px';
+    el.style.top = f.y + 'px';
+    playgroundArea.appendChild(el);
+  });
+}
+
+// Furniture click interactions
+playgroundArea.addEventListener('click', (e) => {
+  const furnitureEl = e.target.closest('.pg-furniture');
+  if (!furnitureEl) return;
+  if (pgBusy) return;
+  pgBusy = true;
+  const type = furnitureEl.dataset.furniture;
+  const fX = parseFloat(furnitureEl.style.left) - 40;
+  const fY = parseFloat(furnitureEl.style.top);
+  const idx = furnitureInteractions[type] || 0;
+  furnitureInteractions[type] = idx + 1;
+
+  runStubTo(fX, () => {
+    if (type === 'bed') {
+      const action = idx % 3;
+      if (action === 0) {
+        // Nap on the bed
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'stubSnooze 2s ease-in-out infinite';
+        furnitureEl.style.animation = 'couchSink 0.5s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          furnitureEl.style.animation = '';
+          pgBusy = false;
+        }, 3000);
+      } else if (action === 1) {
+        // Flop onto bed
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'sit 1s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          pgBusy = false;
+        }, 1000);
+      } else {
+        // Roll around on bed
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'roll 1s ease-in-out';
+        furnitureEl.style.animation = 'furnitureWobble 0.5s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          furnitureEl.style.animation = '';
+          pgBusy = false;
+        }, 1000);
+      }
+    } else if (type === 'scratcher') {
+      const action = idx % 3;
+      if (action === 0) {
+        // Scratch it
+        furnitureEl.style.animation = 'scratchShake 0.4s ease-in-out 3';
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'shake 0.5s ease-in-out 2';
+        setTimeout(() => {
+          furnitureEl.style.animation = '';
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          pgBusy = false;
+        }, 1200);
+      } else if (action === 1) {
+        // Climb it (jump on top)
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'jump 0.6s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          pgBusy = false;
+        }, 700);
+      } else {
+        // Rub against it
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'roll 1s ease-in-out';
+        furnitureEl.style.animation = 'furnitureWobble 0.8s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          furnitureEl.style.animation = '';
+          pgBusy = false;
+        }, 1000);
+      }
+    } else if (type === 'couch') {
+      const action = idx % 3;
+      if (action === 0) {
+        // Sit on couch
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'sit 1.5s ease-in-out';
+        furnitureEl.style.animation = 'couchSink 0.5s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          furnitureEl.style.animation = '';
+          pgBusy = false;
+        }, 1500);
+      } else if (action === 1) {
+        // Bounce on couch
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'jump 0.6s ease-in-out 2';
+        furnitureEl.style.animation = 'couchSink 0.3s ease-in-out 4';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          furnitureEl.style.animation = '';
+          pgBusy = false;
+        }, 1200);
+      } else {
+        // Hide behind couch
+        pgStub.style.transition = 'opacity 0.4s, top 0.4s';
+        pgStub.style.opacity = '0.3';
+        const origTop = pgStub.style.top;
+        pgStub.style.top = (parseFloat(origTop) + 15) + 'px';
+        setTimeout(() => {
+          pgStub.style.opacity = '1';
+          pgStub.style.top = origTop;
+          setTimeout(() => { pgStub.style.transition = 'left 0.6s ease-in-out, top 0.6s ease-in-out'; pgBusy = false; }, 400);
+        }, 1500);
+      }
+    } else if (type === 'lamp') {
+      const action = idx % 3;
+      if (action === 0) {
+        // Knock it over!
+        furnitureEl.style.animation = 'lampTip 0.8s ease-in-out';
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+          furnitureEl.style.animation = '';
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          pgBusy = false;
+        }, 800);
+      } else if (action === 1) {
+        // Stare at it intensely
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'readBreathe 2s ease-in-out';
+        furnitureEl.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          furnitureEl.style.transform = '';
+          pgBusy = false;
+        }, 2000);
+      } else {
+        // Bat at the lamp
+        furnitureEl.style.animation = 'furnitureWobble 0.4s ease-in-out 2';
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'shake 0.3s ease-in-out 2';
+        setTimeout(() => {
+          furnitureEl.style.animation = '';
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          pgBusy = false;
+        }, 800);
+      }
+    } else if (type === 'plant') {
+      const action = idx % 3;
+      if (action === 0) {
+        // Hide behind it
+        pgStub.style.transition = 'opacity 0.4s, left 0.4s ease-in-out, top 0.6s ease-in-out';
+        pgStub.style.opacity = '0.2';
+        furnitureEl.style.animation = 'plantRustle 0.6s ease-in-out';
+        setTimeout(() => {
+          pgStub.style.opacity = '1';
+          furnitureEl.style.animation = '';
+          pgStub.style.transition = 'left 0.6s ease-in-out, top 0.6s ease-in-out';
+          pgBusy = false;
+        }, 1800);
+      } else if (action === 1) {
+        // Nibble on it
+        pgStub.classList.remove('idle');
+        pgStub.style.animation = 'munch 0.4s ease-in-out 3';
+        furnitureEl.style.animation = 'plantRustle 0.4s ease-in-out 3';
+        setTimeout(() => {
+          pgStub.style.animation = '';
+          pgStub.classList.add('idle');
+          furnitureEl.style.animation = '';
+          pgBusy = false;
+        }, 1200);
+      } else {
+        // Knock it over and look guilty
+        furnitureEl.style.animation = 'lampTip 0.6s ease-in-out';
+        setTimeout(() => {
+          furnitureEl.style.animation = '';
+          // Look guilty - back away
+          const currentX = parseFloat(pgStub.style.left) || 0;
+          pgStub.style.left = (currentX - 50) + 'px';
+          setTimeout(() => { pgBusy = false; }, 600);
+        }, 600);
+      }
+    } else {
+      pgBusy = false;
+    }
+  }, fY);
+});
 
 let pawInterval = null;
 let pgBusy = false;
@@ -1917,7 +2418,7 @@ function runStubTo(targetX, callback, targetY) {
 // Click ground to move — anywhere on the grass
 playgroundArea.addEventListener('click', (e) => {
   if (pgBusy) return;
-  if (e.target.classList.contains('pg-toy')) return;
+  if (e.target.classList.contains('pg-toy') || e.target.closest('.pg-furniture')) return;
   const rect = playgroundArea.getBoundingClientRect();
   const targetX = Math.max(0, Math.min(rect.width - 80, e.clientX - rect.left - 40));
   const clickY = e.clientY - rect.top - 45;
